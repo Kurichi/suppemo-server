@@ -1,0 +1,6 @@
+service-account-file.json
+mysql/data/*
+mysql/log/*
+nginx/logs/*
+*.env
+tmp

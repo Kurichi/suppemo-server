@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  proxy:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    networks:
+      - suppemo
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/logs:/var/log/nginx
+    restart: always
+
+  app:
+    container_name: go-app
+    build:
+      context: ./golang
+      dockerfile: ./Dockerfile.dev
+    networks:
+      - suppemo
+    ports:
+      - 8080:8080
+    volumes:
+      - ./golang/app:/go/src/app:cached
+    restart: always
+
+  db:
+    container_name: mysql
+    build:
+      context: ./mysql
+      dockerfile: ./Dockerfile.dev
+    networks:
+      - suppemo
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/log:/var/log/mysql
+    env_file:
+      - ./mysql/db-user.env
+    restart: always
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: db
+    networks:
+      - suppemo
+    ports:
+      - 8000:80
+    restart: always
+
+networks:
+  suppemo:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24

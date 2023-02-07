@@ -1,38 +1,56 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
-	"suppemo-api/middleware"
-	middlware "suppemo-api/middleware"
+	"suppemo-api/model"
 
 	"github.com/labstack/echo/v4"
 )
 
-func GetUser(c echo.Context) error {
-	authHeader := c.Request().Header.Get("Authorization")
-	_, err := middlware.Auth(authHeader)
+func (h *Handler) SignUp(c echo.Context) error {
+	req := &model.SignUpRequest{}
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, "")
+	}
+
+	user, err := h.service.CreateUser(c.Request().Context(), req.FirebaseUID)
 	if err != nil {
-		fmt.Printf("[ERROR] %v", err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	uid := c.QueryParam("uid")
+	return c.JSON(http.StatusOK, &model.SignUpResponse{
+		User: *user,
+	})
+}
 
-	user, err := middleware.GetUser(uid)
+func (h *Handler) SignIn(c echo.Context) error {
+	req := &model.SignInRequest{}
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, "")
+	}
+
+	user, err := h.service.ReadUser(c.Request().Context(), req.FirebaseUID)
 	if err != nil {
-		fmt.Printf("[ERROR] %v", err.Error())
-		return c.String(http.StatusBadRequest, "no-user")
+		return c.JSON(http.StatusBadRequest, "")
 	}
 
-	type result struct {
-		UID    string `json:"uid"`
-		Name   string `json:"name"`
-		Avatar string `json:"avatar"`
+	return c.JSON(http.StatusOK, &model.SignInResponse{
+		User: *user,
+	})
+}
+
+func (h *Handler) GetUser(c echo.Context) error {
+	req := &model.FindUserRequest{}
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, "")
 	}
-	return c.JSON(http.StatusOK, result{
-		UID:    user.UID,
-		Name:   user.DisplayName,
-		Avatar: user.PhotoURL,
+
+	users, err := h.service.FindUser(c.Request().Context(), req.FirebaseUIDs)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "")
+	}
+
+	return c.JSON(http.StatusOK, &model.FindUserResponse{
+		Users: users,
 	})
 }

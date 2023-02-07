@@ -22,6 +22,9 @@ require (
 	firebase.google.com/go v3.13.0+incompatible // indirect
 	firebase.google.com/go/v4 v4.10.0 // indirect
 	github.com/MicahParks/keyfunc v1.5.1 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
@@ -29,6 +32,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.6.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/oliveroneill/exponent-server-sdk-golang v0.0.0-20210823140141-d050598be512 // indirect

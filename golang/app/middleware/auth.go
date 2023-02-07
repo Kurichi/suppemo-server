@@ -5,6 +5,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
+	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
 )
 
@@ -38,4 +39,13 @@ func Auth(idToken string) (*auth.UserRecord, error) {
 
 func GetUser(uid string) (*auth.UserRecord, error) {
 	return client.GetUser(context.Background(), uid)
+}
+
+func FirebaseAuthMiddleware(client *auth.Client) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+
+			return next(c)
+		}
+	}
 }

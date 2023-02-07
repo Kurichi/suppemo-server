@@ -1,51 +1,52 @@
 package model
 
 import (
-	"fmt"
-	"suppemo-api/mydb"
 	"time"
 )
 
-type User struct {
-	UID     string    `json:"uid" form:"uid" query:"uid"`
-	Created time.Time `json:"created" form:"created" query:"created"`
-	Updated time.Time `json:"updated" form:"updated" query:"updated"`
-}
-
-func CreateUser(uid string) error {
-	db := mydb.GetDB()
-
-	stmt, err := db.Prepare("INSERT IGNORE INTO users(uid) VALUES(?)")
-	if err != nil {
-		fmt.Printf("[ERROR] user prepare error: %v", err)
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(uid)
-	if err != nil {
-		fmt.Printf("[ERROR] user exec error: %v", err)
-		return err
+type (
+	User struct {
+		ID          int64     `json:"id"`
+		FirebaseUID string    `json:"firebase_uid"`
+		Name        string    `json:"name"`
+		PhotoURL    string    `json:"photo_url"`
+		CreatedAt   time.Time `json:"created_at"`
+		UpdatedAt   time.Time `json:"updated_at"`
+		IsDelete    bool      `json:"is_delete"`
 	}
 
-	return nil
-}
-
-func FindUser(uid string) (bool, error) {
-	db := mydb.GetDB()
-
-	stmt, err := db.Prepare("SELECT EXISTS (SELECT uid FROM users WHERE uid = ?)")
-	if err != nil {
-		fmt.Printf("[ERROR] user prepare error: %v", err)
-		return false, err
+	SignInRequest struct {
+		FirebaseUID string `json:"firebase_uid"`
 	}
-	defer stmt.Close()
-
-	var exists bool
-	if err = stmt.QueryRow(uid).Scan(&exists); err != nil {
-		fmt.Printf("[ERROR] user query error: %v", err)
-		return false, err
+	SignInResponse struct {
+		User User `json:"user"`
 	}
 
-	return exists, nil
-}
+	SignUpRequest struct {
+		FirebaseUID string `json:"firebase_uid"`
+	}
+	SignUpResponse struct {
+		User User `json:"user"`
+	}
+
+	FindUserRequest struct {
+		FirebaseUIDs []string `json:"firebase_uids"`
+	}
+	FindUserResponse struct {
+		Users []*User `json:"users"`
+	}
+
+	DeleteUserRequest struct {
+		FirebaseUID string `json:"firebase_uid"`
+	}
+	DeleteUserResponse struct {
+		User User `json:"user"`
+	}
+
+	UnDeleteUserRequest struct {
+		FirebaseUID string `json:"firebase_uid"`
+	}
+	UnDeleteUserResponse struct {
+		User User `json:"user"`
+	}
+)
